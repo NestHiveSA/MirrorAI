@@ -1,0 +1,31 @@
+{
+  "name": "mirrorai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MirrorAI MVP v0.1 monorepo foundation",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tests/*"
+  ],
+  "scripts": {
+    "lint": "npm run lint -w @mirrorai/shared && npm run lint -w @mirrorai/knowledge && npm run lint -w @mirrorai/ai-gateway && npm run lint -w @mirrorai/risk-engine && npm run lint -w @mirrorai/api && npm run lint -w @mirrorai/web && npm run lint -w @mirrorai/risk-cases",
+    "typecheck": "npm run typecheck -w @mirrorai/shared && npm run typecheck -w @mirrorai/knowledge && npm run typecheck -w @mirrorai/ai-gateway && npm run typecheck -w @mirrorai/risk-engine && npm run typecheck -w @mirrorai/api && npm run typecheck -w @mirrorai/web && npm run typecheck -w @mirrorai/risk-cases",
+    "test": "npm run test -w @mirrorai/shared && npm run test -w @mirrorai/knowledge && npm run test -w @mirrorai/ai-gateway && npm run test -w @mirrorai/risk-engine && npm run test -w @mirrorai/api && npm run test -w @mirrorai/web && npm run test -w @mirrorai/risk-cases",
+    "build": "npm run build -w @mirrorai/shared && npm run build -w @mirrorai/knowledge && npm run build -w @mirrorai/ai-gateway && npm run build -w @mirrorai/risk-engine && npm run build -w @mirrorai/api && npm run build -w @mirrorai/web && npm run build -w @mirrorai/risk-cases"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.38.0",
+    "vitest": "^3.2.4"
+  }
+}

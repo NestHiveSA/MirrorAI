@@ -29,4 +29,4 @@ docs/
 └── decisions/
 ```
 
-The full approved documents will be committed into their corresponding paths as the repository foundation is completed.
+The approved governing documents are committed in their corresponding paths. Update them through deliberate, reviewable changes rather than ad hoc implementation drift.
