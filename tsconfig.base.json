@@ -1,16 +1,28 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@mirrorai/shared": ["packages/shared/src/index.ts"],
+      "@mirrorai/knowledge": ["packages/knowledge/src/index.ts"],
+      "@mirrorai/ai-gateway": ["packages/ai-gateway/src/index.ts"],
+      "@mirrorai/risk-engine": ["packages/risk-engine/src/index.ts"]
+    },
     "strict": true,
-    "skipLibCheck": true,
+    "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true
   }
 }
+

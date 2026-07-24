@@ -1,0 +1,17 @@
+{
+  "name": "@mirrorai/risk-cases",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@mirrorai/risk-engine": "0.1.0",
+    "@mirrorai/shared": "0.1.0"
+  }
+}
+

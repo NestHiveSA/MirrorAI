@@ -1,5 +1,5 @@
 {
-  "name": "@mirrorai/shared",
+  "name": "@mirrorai/knowledge",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "zod": "^4.0.14"
+    "@mirrorai/shared": "0.1.0"
   }
 }
 

@@ -113,3 +113,80 @@ AI coding agents, including Codex, must follow the repository-level instructions
 MirrorAI is developed as a product of **NestHive**.
 
 The project is currently under active foundation and MVP development.
+
+## Repository foundation
+
+MIRROR-001 establishes the initial monorepo boundaries and starter tooling for:
+
+- `apps/web` — React + TypeScript + Vite shell with Arabic RTL defaults.
+- `apps/api` — Node.js + TypeScript API foundation with `GET /api/v1/health` and a placeholder `POST /api/v1/analysis` boundary.
+- `packages/shared` — shared schemas and contracts.
+- `packages/risk-engine` — independent deterministic starter utilities only.
+- `packages/ai-gateway` — provider-agnostic AI boundary without a configured provider.
+- `packages/knowledge` — structured, version-controlled starter definitions.
+- `tests/risk-cases` — synthetic regression fixture and foundational tests.
+
+## Getting started
+
+This repository is configured as a workspace monorepo.
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+## Development Environment
+
+- Node.js: validated locally with `v24.13.0`
+- Package manager: `npm` is the current effective package manager
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+The unified development command starts both services:
+
+- Web: `http://localhost:5173`
+- API: `http://localhost:3001/api/v1/health`
+
+## Production deployment
+
+### Web (Vercel)
+
+- Deploy from `apps/web` as the Vercel root directory.
+- Build command: `npm run build`.
+- Output directory: `dist`.
+- Set `VITE_API_BASE_URL` to the public API origin, for example `https://mirrorai-api.up.railway.app`.
+- Security headers are defined in `apps/web/vercel.json`.
+
+### API (Railway)
+
+- Deploy from `apps/api` as the Railway service root.
+- Config as code is provided in `apps/api/railway.toml`.
+- Required runtime environment variables are documented in `.env.example`.
+- Health check path: `/api/v1/health`.
+
+### Required environment variables
+
+See `.env.example` for the complete list.
+
+Key variables:
+
+- `PORT`
+- `HOST`
+- `NODE_ENV`
+- `LOG_LEVEL`
+- `CORS_ORIGIN`
+- `RATE_LIMIT_MAX`
+- `RATE_LIMIT_TIME_WINDOW_MS`
+- `TRUST_PROXY`
+- `VITE_API_BASE_URL`

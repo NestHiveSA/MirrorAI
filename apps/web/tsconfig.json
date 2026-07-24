@@ -1,16 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@mirrorai/shared": ["../../packages/shared/src/index.ts"]
-    },
-    "types": ["vite/client", "vitest/globals"],
-    "noEmit": true
+    "types": ["vite/client"]
   },
-  "include": ["src", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "vite.config.ts"],
+  "references": [
+    { "path": "../../packages/shared" }
+  ]
 }
+
