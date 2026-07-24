@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "rootDir": "src",
+    "outDir": "dist",
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@mirrorai/shared": ["../shared/src/index.ts"]
+    },
+    "types": ["node", "vitest/globals"],
+    "declaration": true
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ]
+}
