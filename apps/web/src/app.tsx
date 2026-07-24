@@ -222,4 +222,3 @@ export function App() {
     </main>
   );
 }
-
