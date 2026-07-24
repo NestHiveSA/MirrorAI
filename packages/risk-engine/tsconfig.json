@@ -7,6 +7,7 @@
   },
   "include": ["src"],
   "references": [
+    { "path": "../knowledge" },
     { "path": "../shared" }
   ]
 }

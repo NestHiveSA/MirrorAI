@@ -1,11 +1,12 @@
 import { createServer } from "./server.js";
+import { apiConfig } from "./config.js";
 
 const server = createServer();
-const port = Number(process.env.PORT ?? 3001);
+const port = apiConfig.port;
 
 server
   .listen({
-    host: "0.0.0.0",
+    host: apiConfig.host,
     port
   })
   .catch(async (error) => {

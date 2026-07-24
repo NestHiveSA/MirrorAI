@@ -132,6 +132,7 @@ This repository is configured as a workspace monorepo.
 
 ```bash
 npm install
+npm run dev
 npm run lint
 npm run typecheck
 npm run test
@@ -145,8 +146,47 @@ npm run build
 
 ```bash
 npm install
+npm run dev
 npm run lint
 npm run typecheck
 npm run test
 npm run build
 ```
+
+The unified development command starts both services:
+
+- Web: `http://localhost:5173`
+- API: `http://localhost:3001/api/v1/health`
+
+## Production deployment
+
+### Web (Vercel)
+
+- Deploy from `apps/web` as the Vercel root directory.
+- Build command: `npm run build`.
+- Output directory: `dist`.
+- Set `VITE_API_BASE_URL` to the public API origin, for example `https://mirrorai-api.up.railway.app`.
+- Security headers are defined in `apps/web/vercel.json`.
+
+### API (Railway)
+
+- Deploy from `apps/api` as the Railway service root.
+- Config as code is provided in `apps/api/railway.toml`.
+- Required runtime environment variables are documented in `.env.example`.
+- Health check path: `/api/v1/health`.
+
+### Required environment variables
+
+See `.env.example` for the complete list.
+
+Key variables:
+
+- `PORT`
+- `HOST`
+- `NODE_ENV`
+- `LOG_LEVEL`
+- `CORS_ORIGIN`
+- `RATE_LIMIT_MAX`
+- `RATE_LIMIT_TIME_WINDOW_MS`
+- `TRUST_PROXY`
+- `VITE_API_BASE_URL`

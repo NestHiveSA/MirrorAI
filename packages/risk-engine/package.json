@@ -18,6 +18,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@mirrorai/knowledge": "0.1.0",
     "@mirrorai/shared": "0.1.0"
   }
 }

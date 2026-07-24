@@ -3,6 +3,13 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@mirrorai/shared": ["packages/shared/src/index.ts"],
+      "@mirrorai/knowledge": ["packages/knowledge/src/index.ts"],
+      "@mirrorai/ai-gateway": ["packages/ai-gateway/src/index.ts"],
+      "@mirrorai/risk-engine": ["packages/risk-engine/src/index.ts"]
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
