@@ -13,6 +13,7 @@
     "dev": "node scripts/dev.mjs",
     "dev:api": "npm run dev -w @mirrorai/api",
     "dev:web": "npm run dev -w @mirrorai/web -- --host 0.0.0.0 --port 5173",
+    "start": "npm run start -w @mirrorai/api",
     "lint": "npm run lint -w @mirrorai/shared && npm run lint -w @mirrorai/knowledge && npm run lint -w @mirrorai/ai-gateway && npm run lint -w @mirrorai/risk-engine && npm run lint -w @mirrorai/api && npm run lint -w @mirrorai/web && npm run lint -w @mirrorai/risk-cases",
     "typecheck": "npm run typecheck -w @mirrorai/shared && npm run typecheck -w @mirrorai/knowledge && npm run typecheck -w @mirrorai/ai-gateway && npm run typecheck -w @mirrorai/risk-engine && npm run typecheck -w @mirrorai/api && npm run typecheck -w @mirrorai/web && npm run typecheck -w @mirrorai/risk-cases",
     "test": "npm run test -w @mirrorai/shared && npm run test -w @mirrorai/knowledge && npm run test -w @mirrorai/ai-gateway && npm run test -w @mirrorai/risk-engine && npm run test -w @mirrorai/api && npm run test -w @mirrorai/web && npm run test -w @mirrorai/risk-cases",
