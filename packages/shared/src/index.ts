@@ -98,6 +98,22 @@ export const ErrorResponseSchema = z.object({
   })
 });
 
+export function buildAnalysisRequest(
+  inputType: AnalysisInputType,
+  content: string,
+  url: string
+): AnalysisRequest {
+  if (inputType === "INPUT-URL") {
+    return { input_type: inputType, url };
+  }
+
+  if (inputType === "INPUT-MIXED") {
+    return { input_type: inputType, content, url };
+  }
+
+  return { input_type: inputType, content };
+}
+
 export type AnalysisInputType = z.infer<typeof AnalysisInputTypeSchema>;
 export type AnalysisRequest = z.infer<typeof AnalysisRequestSchema>;
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;

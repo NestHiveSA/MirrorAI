@@ -9,7 +9,7 @@ import {
   TextInput,
   View
 } from "react-native";
-import type { AnalysisInputType, AnalysisRequest, AnalysisResult } from "@mirrorai/shared";
+import { buildAnalysisRequest, type AnalysisInputType, type AnalysisResult } from "@mirrorai/shared";
 import { runAnalysis } from "./src/api";
 
 const inputTypeLabels: Record<AnalysisInputType, string> = {
@@ -19,18 +19,6 @@ const inputTypeLabels: Record<AnalysisInputType, string> = {
 };
 
 const supportedInputs = Object.keys(inputTypeLabels) as AnalysisInputType[];
-
-function buildRequest(inputType: AnalysisInputType, content: string, url: string): AnalysisRequest {
-  if (inputType === "INPUT-URL") {
-    return { input_type: inputType, url };
-  }
-
-  if (inputType === "INPUT-MIXED") {
-    return { input_type: inputType, content, url };
-  }
-
-  return { input_type: inputType, content };
-}
 
 export default function App() {
   const [inputType, setInputType] = useState<AnalysisInputType>("INPUT-TEXT");
@@ -42,7 +30,10 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const request = useMemo(() => buildRequest(inputType, content, url), [inputType, content, url]);
+  const request = useMemo(
+    () => buildAnalysisRequest(inputType, content, url),
+    [inputType, content, url]
+  );
 
   async function handleAnalyze() {
     setIsLoading(true);
@@ -153,15 +144,15 @@ export default function App() {
           <Text style={styles.bodyText}>{result.explanation}</Text>
 
           <Text style={styles.sectionTitle}>الأدلة</Text>
-          {result.evidence.map((item) => (
-            <Text key={item} style={styles.listItem}>
+          {result.evidence.map((item, index) => (
+            <Text key={index} style={styles.listItem}>
               • {item}
             </Text>
           ))}
 
           <Text style={styles.sectionTitle}>الإجراءات الموصى بها</Text>
-          {result.recommended_actions.map((action) => (
-            <Text key={`${action.level}-${action.title}`} style={styles.listItem}>
+          {result.recommended_actions.map((action, index) => (
+            <Text key={index} style={styles.listItem}>
               • [{action.level}] {action.title}: {action.description}
             </Text>
           ))}
@@ -169,8 +160,8 @@ export default function App() {
           {result.limitations.length > 0 && (
             <>
               <Text style={styles.sectionTitle}>محدودية النتيجة</Text>
-              {result.limitations.map((limitation) => (
-                <Text key={limitation} style={styles.listItem}>
+              {result.limitations.map((limitation, index) => (
+                <Text key={index} style={styles.listItem}>
                   • {limitation}
                 </Text>
               ))}

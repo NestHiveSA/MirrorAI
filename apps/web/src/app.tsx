@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { AnalysisInputType, AnalysisResult } from "@mirrorai/shared";
+import { buildAnalysisRequest, type AnalysisInputType, type AnalysisResult } from "@mirrorai/shared";
 import { apiBaseUrl } from "./config";
 
 const supportedInputs: AnalysisInputType[] = ["INPUT-TEXT", "INPUT-URL", "INPUT-MIXED"];
@@ -19,18 +19,6 @@ const sampleCases = {
   }
 };
 
-function formatRequestBody(inputType: AnalysisInputType, content: string, url: string) {
-  if (inputType === "INPUT-URL") {
-    return { input_type: inputType, url };
-  }
-
-  if (inputType === "INPUT-MIXED") {
-    return { input_type: inputType, content, url };
-  }
-
-  return { input_type: inputType, content };
-}
-
 export function App() {
   const [inputType, setInputType] = useState<AnalysisInputType>("INPUT-TEXT");
   const [content, setContent] = useState(sampleCases.awareness.content);
@@ -41,11 +29,11 @@ export function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const requestPreview = useMemo(
-    () => JSON.stringify(formatRequestBody(inputType, content, url), null, 2),
+    () => JSON.stringify(buildAnalysisRequest(inputType, content, url), null, 2),
     [content, inputType, url]
   );
 
-  async function runAnalysis(payload: ReturnType<typeof formatRequestBody>) {
+  async function runAnalysis(payload: ReturnType<typeof buildAnalysisRequest>) {
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -155,7 +143,7 @@ export function App() {
             type="button"
             className="primary-button"
             onClick={() => {
-              void runAnalysis(formatRequestBody(inputType, content, url));
+              void runAnalysis(buildAnalysisRequest(inputType, content, url));
             }}
             disabled={isLoading}
           >
