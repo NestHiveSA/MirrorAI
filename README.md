@@ -37,7 +37,8 @@ Target structure:
 mirrorai/
 ├── apps/
 │   ├── web/
-│   └── api/
+│   ├── api/
+│   └── mobile/
 ├── packages/
 │   ├── risk-engine/
 │   ├── ai-gateway/
@@ -101,7 +102,6 @@ AI coding agents, including Codex, must follow the repository-level instructions
 
 - Persistent analysis history
 - Full user accounts
-- Native mobile applications
 - General image editing
 - Enterprise platform
 - Public commercial API
@@ -120,6 +120,7 @@ MIRROR-001 establishes the initial monorepo boundaries and starter tooling for:
 
 - `apps/web` — React + TypeScript + Vite shell with Arabic RTL defaults.
 - `apps/api` — Node.js + TypeScript API foundation with `GET /api/v1/health` and a placeholder `POST /api/v1/analysis` boundary.
+- `apps/mobile` — Expo (React Native + TypeScript) client sharing `@mirrorai/shared` contracts, calling the same `apps/api` REST endpoints as the web app. No AI-provider or secret access on-device.
 - `packages/shared` — shared schemas and contracts.
 - `packages/risk-engine` — independent deterministic starter utilities only.
 - `packages/ai-gateway` — provider-agnostic AI boundary without a configured provider.
@@ -157,6 +158,20 @@ The unified development command starts both services:
 
 - Web: `http://localhost:5173`
 - API: `http://localhost:3001/api/v1/health`
+
+## Mobile app (Expo)
+
+`apps/mobile` is a separate Expo (React Native + TypeScript) client. It shares `@mirrorai/shared` request/response contracts with the web app and talks to `apps/api` over the same REST endpoints — it never calls an AI provider directly, matching the AI integration rules in `AGENTS.md`.
+
+```bash
+cd apps/mobile
+npm install
+npm run start
+```
+
+Set `EXPO_PUBLIC_API_BASE_URL` (see `.env.example`) to the API origin reachable from your device or simulator. When testing on a physical device over the local network, use your machine's LAN IP instead of `localhost`, and add that origin to the API's `CORS_ORIGIN` if you run the app in a browser via `npm run web`.
+
+**Known limitation:** `apps/mobile` is intentionally excluded from the root `lint`/`typecheck`/`test`/`build` aggregate scripts for now — the root ESLint config uses type-checked linting tied to the web/api tsconfig graph, and Expo's Metro/Jest tooling needs its own test setup. Follow-up: wire `apps/mobile` into CI once its lint/test tooling is decided (tracked as a follow-up, not silently expanded here per `AGENTS.md` scope discipline).
 
 ## Production deployment
 
