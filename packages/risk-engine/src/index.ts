@@ -92,8 +92,21 @@ const textRules: RuleDefinition[] = [
       explanation: "Claimed institutional identity combined with a risky request can indicate impersonation."
     },
     evidence: "The message claims to represent a trusted institution or support team.",
-    patterns: [/bank|support team|security team|official account|government|delivery company/i, /البنك|خدمة العملاء|الدعم الفني|فريق الأمان|جهة حكومية|شركة الشحن/i],
+    patterns: [/support team|security team|official account|government|delivery company/i, /خدمة العملاء|الدعم الفني|فريق الأمان|جهة حكومية|شركة الشحن/i],
     categoryIds: ["RISK-003", "RISK-004"],
+    skipInProtectiveContext: true
+  },
+  {
+    signal: {
+      signal_id: "SIG-018",
+      severity: 5,
+      confidence: "HIGH",
+      source: "RULE",
+      explanation: "Messages claiming to be from a bank combined with a risky request are a leading pattern in banking fraud and account-takeover attempts."
+    },
+    evidence: "The message claims to represent a bank or banking service.",
+    patterns: [/\bbank\b|banking app|debit card|credit card|\biban\b|swift code/i, /البنك|المصرف|بطاقة الخصم|بطاقة الائتمان|التطبيق البنكي|الحساب البنكي/i],
+    categoryIds: ["RISK-011", "RISK-003", "RISK-004"],
     skipInProtectiveContext: true
   },
   {
@@ -324,6 +337,10 @@ function computeRiskScore(signals: DetectedSignal[]): number {
     score += 15;
   }
 
+  if (signalIds.has("SIG-018") && (signalIds.has("SIG-013") || signalIds.has("SIG-014") || signalIds.has("SIG-004"))) {
+    score += 15;
+  }
+
   if ((signalIds.has("SIG-007") || signalIds.has("SIG-017")) && (signalIds.has("SIG-013") || signalIds.has("SIG-014"))) {
     score += 10;
   }
@@ -488,6 +505,14 @@ function buildRecommendedActions(
       level: "AVOID",
       title: "Do not share credentials or verification codes",
       description: "Legitimate institutions should not ask you to send passwords or one-time login codes in a message."
+    });
+  }
+
+  if (signals.some((signal) => signal.signal_id === "SIG-018")) {
+    actions.unshift({
+      level: "AVOID",
+      title: "Contact your bank only through verified channels",
+      description: "Call the number printed on your card or open your bank's official app — never a number, link, or agent identity presented in this message."
     });
   }
 

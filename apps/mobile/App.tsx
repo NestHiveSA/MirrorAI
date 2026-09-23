@@ -140,6 +140,19 @@ export default function App() {
           <Text style={styles.sectionTitle}>الملخص</Text>
           <Text style={styles.bodyText}>{result.summary}</Text>
 
+          {result.risk_categories.length > 0 && (
+            <>
+              <Text style={styles.sectionTitle}>فئات المخاطر</Text>
+              <View style={styles.categoryRow}>
+                {result.risk_categories.map((category) => (
+                  <Text key={category.risk_id} style={styles.categoryChip}>
+                    {category.label}
+                  </Text>
+                ))}
+              </View>
+            </>
+          )}
+
           <Text style={styles.sectionTitle}>التفسير</Text>
           <Text style={styles.bodyText}>{result.explanation}</Text>
 
@@ -310,6 +323,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6
+  },
+  categoryRow: {
+    flexDirection: "row-reverse",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 4
+  },
+  categoryChip: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#7c2d12",
+    backgroundColor: "#ffedd5",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999
   },
   bodyText: {
     textAlign: "right",

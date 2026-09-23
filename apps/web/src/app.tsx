@@ -173,6 +173,17 @@ export function App() {
               <p>{result.summary}</p>
             </section>
 
+            {result.risk_categories.length > 0 && (
+              <section>
+                <h3>Risk categories</h3>
+                <ul>
+                  {result.risk_categories.map((category) => (
+                    <li key={category.risk_id}>{category.label}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
             <section>
               <h3>Explanation</h3>
               <p>{result.explanation}</p>
