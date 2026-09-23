@@ -18,8 +18,27 @@ describe("analyzeRequest", () => {
     expect(result.risk_level).toBe("CRITICAL");
     expect(result.risk_score).toBeGreaterThanOrEqual(75);
     expect(result.signals.map((signal) => signal.signal_id)).toEqual(
-      expect.arrayContaining(["SIG-001", "SIG-006", "SIG-014"])
+      expect.arrayContaining(["SIG-001", "SIG-018", "SIG-014"])
     );
+    expect(result.risk_categories.map((category) => category.risk_id)).toEqual(
+      expect.arrayContaining(["RISK-011"])
+    );
+    expect(validateResultInvariants(result)).toEqual([]);
+  });
+
+  it("labels bank impersonation combined with an OTP request as banking fraud", () => {
+    const result = analyzeRequest({
+      input_type: "INPUT-TEXT",
+      content: "نحن من البنك، أرسل رمز التحقق لتفادي إيقاف بطاقتك الائتمانية"
+    });
+
+    expect(result.signals.map((signal) => signal.signal_id)).toEqual(
+      expect.arrayContaining(["SIG-018", "SIG-014"])
+    );
+    expect(result.risk_categories.map((category) => category.risk_id)).toContain("RISK-011");
+    expect(
+      result.recommended_actions.some((action) => action.title === "Contact your bank only through verified channels")
+    ).toBe(true);
     expect(validateResultInvariants(result)).toEqual([]);
   });
 

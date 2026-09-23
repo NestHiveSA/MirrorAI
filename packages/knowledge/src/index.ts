@@ -8,7 +8,8 @@ export const riskCategories = [
   { risk_id: "RISK-007", label: "Financial Risk" },
   { risk_id: "RISK-008", label: "Suspicious Link" },
   { risk_id: "RISK-009", label: "Unrealistic Offer" },
-  { risk_id: "RISK-010", label: "Emotional Manipulation" }
+  { risk_id: "RISK-010", label: "Emotional Manipulation" },
+  { risk_id: "RISK-011", label: "Banking Fraud" }
 ] as const;
 
 export const signalCatalog = [
@@ -16,7 +17,8 @@ export const signalCatalog = [
   { signal_id: "SIG-003", name: "Sensitive Data Request" },
   { signal_id: "SIG-006", name: "Impersonation" },
   { signal_id: "SIG-007", name: "Suspicious Link" },
-  { signal_id: "SIG-014", name: "Verification Code Request" }
+  { signal_id: "SIG-014", name: "Verification Code Request" },
+  { signal_id: "SIG-018", name: "Banking Impersonation" }
 ] as const;
 
 export const recommendationLevels = [
