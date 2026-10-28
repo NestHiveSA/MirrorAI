@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 import type { AnalysisResult } from "@mirrorai/shared";
-import { apiBaseUrl } from "./config";
+import { analyze } from "./analyze";
 import { buildRequestBody } from "./request";
 import {
   API_ERROR_MESSAGE,
@@ -36,20 +36,7 @@ export function App() {
     setState({ status: "loading" });
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/v1/analysis`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(buildRequestBody(content, url))
-      });
-
-      if (!response.ok) {
-        setState({ status: "error", message: API_ERROR_MESSAGE });
-        return;
-      }
-
-      setState({ status: "success", result: (await response.json()) as AnalysisResult });
+      setState({ status: "success", result: await analyze(buildRequestBody(content, url)) });
     } catch {
       setState({ status: "error", message: API_ERROR_MESSAGE });
     }
