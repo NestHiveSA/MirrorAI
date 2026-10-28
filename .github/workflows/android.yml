@@ -34,9 +34,9 @@ jobs:
       - name: Build web app with on-device analysis and sync Android project
         run: npm run build:mobile -w @mirrorai/web
 
-      - name: Build debug APK
+      - name: Build debug APK (and an unsigned bundle to check the release config)
         working-directory: apps/web/android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug bundleRelease
 
       - uses: actions/upload-artifact@v4
         with:
