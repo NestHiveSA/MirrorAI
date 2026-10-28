@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { riskCategories } from "@mirrorai/knowledge";
 import {
   AnalysisResultSchema,
@@ -252,7 +251,7 @@ export function analyzeRequest(request: AnalysisRequest): AnalysisResult {
   const recommendedActions = buildRecommendedActions(riskLevel, signals);
 
   const result: AnalysisResult = {
-    analysis_id: randomUUID(),
+    analysis_id: globalThis.crypto.randomUUID(),
     input_type: request.input_type,
     risk_score: riskScore,
     risk_level: riskLevel,
