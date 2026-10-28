@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { knowledgeSignalIds } from "./test-fixtures";
 import { App } from "./app";
+import { CheckScreen } from "./screens/check-screen";
+import { routeFromHash } from "./routes";
+import { SECTIONS } from "./sections";
 import { buildRequestBody } from "./request";
 import { actionsFor, copyForSignal, levelLabel, signalCopy, summaryFor } from "./copy";
 import type { AnalysisResult } from "@mirrorai/shared";
@@ -33,11 +36,34 @@ function resultWith(signalIds: string[], level: AnalysisResult["risk_level"], sc
 }
 
 describe("App", () => {
-  it("renders the Arabic, user-facing shell without developer panels", () => {
+  it("opens on the welcome screen and the home sections", () => {
     const markup = renderToStaticMarkup(<App />);
 
-    expect(markup).toContain("رفيقك الرقمي");
+    expect(markup).toContain("مرحباً بك في العش الرقمي");
     expect(markup).toContain("منتج من NestHive");
+    for (const section of SECTIONS) {
+      expect(markup).toContain(section.title);
+    }
+  });
+
+  it("marks sections without content as coming soon, and only those", () => {
+    expect(SECTIONS.filter((section) => section.comingSoon).map((section) => section.route)).toEqual([
+      "library",
+      "videos",
+      "podcast"
+    ]);
+  });
+
+  it("maps hashes to screens and falls back to home", () => {
+    expect(routeFromHash("#/check")).toBe("check");
+    expect(routeFromHash("#/awareness")).toBe("awareness");
+    expect(routeFromHash("")).toBe("home");
+    expect(routeFromHash("#/unknown")).toBe("home");
+  });
+
+  it("renders the Arabic check screen without developer panels", () => {
+    const markup = renderToStaticMarkup(<CheckScreen />);
+
     expect(markup).toContain("افحص الرسالة");
     expect(markup).not.toContain("Raw JSON");
     expect(markup).not.toContain("HTTP status");
