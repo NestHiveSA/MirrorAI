@@ -54,7 +54,10 @@ export function App() {
           <h1>MirrorAI</h1>
           <p className="brand-tagline">رفيقك الرقمي</p>
         </div>
-        <p className="brand-attribution">منتج من NestHive</p>
+        <p className="brand-attribution">
+          <img src="/brand/nesthive-nest.png" alt="NestHive" />
+          <span>منتج من NestHive</span>
+        </p>
       </header>
 
       <section className="intro-card">
