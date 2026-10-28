@@ -82,3 +82,31 @@ describe("Moroccan Darija and French coverage", () => {
     expect(result.signals).toEqual([]);
   });
 });
+
+describe("misleading content signals", () => {
+  it("flags unsourced viral claims without calling them false", () => {
+    const result = analyzeRequest({
+      input_type: "INPUT-TEXT",
+      content: "حسب مصادر مطلعة، الخبر مؤكد 100%، انشر قبل الحذف"
+    });
+
+    expect(result.signals.map((signal) => signal.signal_id)).toEqual(
+      expect.arrayContaining(["SIG-020", "SIG-021", "SIG-023"])
+    );
+    expect(result.risk_categories.map((category) => category.risk_id)).toContain("RISK-011");
+    expect(validateResultInvariants(result)).toEqual([]);
+  });
+
+  it("flags French and Darija viral sharing pressure", () => {
+    for (const content of ["Selon nos sources, c'est un scandale, partagez avant qu'il soit supprimé", "سمعت بلي كاين فضيحة، بارطاجي قبل ما يتمسح"]) {
+      const result = analyzeRequest({ input_type: "INPUT-TEXT", content });
+      expect(result.signals.map((signal) => signal.signal_id)).toEqual(expect.arrayContaining(["SIG-020", "SIG-021", "SIG-022"]));
+    }
+  });
+
+  it("keeps a single weak misinformation cue at a low level", () => {
+    const result = analyzeRequest({ input_type: "INPUT-TEXT", content: "مفاجأة كبرى في مباراة الأمس" });
+
+    expect(result.risk_level).toBe("LOW");
+  });
+});

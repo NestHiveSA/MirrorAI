@@ -148,6 +148,55 @@ const textRules: RuleDefinition[] = [
     categoryIds: ["RISK-001", "RISK-006", "RISK-004"],
     requiresDirectRequest: true,
     skipInProtectiveContext: true
+  },
+  {
+    signal: {
+      signal_id: "SIG-020",
+      severity: 2,
+      confidence: "MEDIUM",
+      source: "RULE",
+      explanation: "Claims attributed to unnamed sources need independent verification before they are trusted or shared."
+    },
+    evidence: "The content attributes information to unnamed or unverifiable sources.",
+    patterns: [/sources say|insider sources|according to sources|reliable source/i, /مصادر مطلع(ة|ين)?|مصادر خاصة|مصدر موثوق|حسب مصادر|تشير مصادر|أفادت مصادر|معلومات متداولة|قالو لي|كيقولو بلي|سمعت بلي/i, /selon (des|nos) sources|sources (sûres|bien informées)|source fiable|il paraît que|on dit que/i],
+    categoryIds: ["RISK-011"]
+  },
+  {
+    signal: {
+      signal_id: "SIG-021",
+      severity: 2,
+      confidence: "MEDIUM",
+      source: "RULE",
+      explanation: "Pressure to share quickly is a common way to spread content before anyone checks it."
+    },
+    evidence: "The content pushes the reader to share or forward it quickly.",
+    patterns: [/share before (it'?s )?deleted|share with everyone|forward to all/i, /انشر قبل الحذف|شارك بسرعة|شارك مع الجميع|شارك مع أصدقائك|أرسل للجميع|انشر الآن|قبل حذف الخبر|لا تدعهم يخفون الحقيقة|بارطاجي|پارطاجي|نشرو قبل ما يتمسح|صيفطها لكاع/i, /partagez (avant|vite|à tous|au maximum)|faites tourner|avant (qu'il|que ce soit) supprimé/i],
+    categoryIds: ["RISK-011", "RISK-004"],
+    skipInProtectiveContext: true
+  },
+  {
+    signal: {
+      signal_id: "SIG-022",
+      severity: 2,
+      confidence: "LOW",
+      source: "RULE",
+      explanation: "Shocking or sensational wording is used to grab attention and can reduce careful reading."
+    },
+    evidence: "Sensational or shocking wording was detected.",
+    patterns: [/shocking|you won'?t believe|they don'?t want you to know/i, /خبر صادم|لن تصدق|مفاجأة كبرى|الحقيقة التي لا يريدونك أن تعرفها|فضيحة كبرى|ما غاديش تصدق|فضيحة/i, /choquant|vous n'allez pas (le )?croire|scandale|ce qu'on vous cache/i],
+    categoryIds: ["RISK-011", "RISK-010"]
+  },
+  {
+    signal: {
+      signal_id: "SIG-023",
+      severity: 2,
+      confidence: "LOW",
+      source: "RULE",
+      explanation: "Absolute certainty without a clear source is a reason to check before believing or sharing."
+    },
+    evidence: "The content claims absolute certainty without a verifiable source.",
+    patterns: [/100% (true|confirmed)|no doubt|undeniable/i, /مؤكد ?100%|مؤكد بنسبة ?100%|الخبر مؤكد|بدون شك|لا شك|الحقيقة المطلقة|لا يمكن إنكار|ثبت نهائي(اً|ا|ًا)?|مضمونة 100|مية فالمية/i, /(vrai|confirmé|garanti) (à )?100 ?%|sans aucun doute|c'est prouvé/i],
+    categoryIds: ["RISK-011"]
   }
 ];
 
