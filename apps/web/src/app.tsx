@@ -1,53 +1,39 @@
-import { useMemo, useState } from "react";
-import type { AnalysisInputType, AnalysisResult } from "@mirrorai/shared";
+import { type FormEvent, useState } from "react";
+import type { AnalysisResult } from "@mirrorai/shared";
 import { apiBaseUrl } from "./config";
+import { buildRequestBody } from "./request";
+import {
+  API_ERROR_MESSAGE,
+  EMPTY_INPUT_MESSAGE,
+  LIMITATIONS,
+  SCORE_MEANING_TEXT,
+  actionsFor,
+  copyForSignal,
+  levelClassName,
+  levelLabel,
+  summaryFor
+} from "./copy";
 
-const supportedInputs: AnalysisInputType[] = ["INPUT-TEXT", "INPUT-URL", "INPUT-MIXED"];
-
-const sampleCases = {
-  awareness: {
-    input_type: "INPUT-TEXT" as const,
-    content: "تحذير أمني: لا تشارك رمز التحقق مع أي شخص ولا تضغط على الروابط المجهولة"
-  },
-  phishing: {
-    input_type: "INPUT-TEXT" as const,
-    content: "عاجل: نحن من البنك. أرسل رمز التحقق الآن لتجنب إيقاف الحساب"
-  },
-  verification: {
-    input_type: "INPUT-TEXT" as const,
-    content: "يرجى التحقق من هويتك عبر الرابط الرسمي قبل متابعة الطلب"
-  }
-};
-
-function formatRequestBody(inputType: AnalysisInputType, content: string, url: string) {
-  if (inputType === "INPUT-URL") {
-    return { input_type: inputType, url };
-  }
-
-  if (inputType === "INPUT-MIXED") {
-    return { input_type: inputType, content, url };
-  }
-
-  return { input_type: inputType, content };
-}
+type AnalysisState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; result: AnalysisResult }
+  | { status: "error"; message: string };
 
 export function App() {
-  const [inputType, setInputType] = useState<AnalysisInputType>("INPUT-TEXT");
-  const [content, setContent] = useState(sampleCases.awareness.content);
-  const [url, setUrl] = useState("https://example.com");
-  const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [httpStatus, setHttpStatus] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [content, setContent] = useState("");
+  const [url, setUrl] = useState("");
+  const [state, setState] = useState<AnalysisState>({ status: "idle" });
 
-  const requestPreview = useMemo(
-    () => JSON.stringify(formatRequestBody(inputType, content, url), null, 2),
-    [content, inputType, url]
-  );
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-  async function runAnalysis(payload: ReturnType<typeof formatRequestBody>) {
-    setIsLoading(true);
-    setErrorMessage(null);
+    if (!content.trim()) {
+      setState({ status: "error", message: EMPTY_INPUT_MESSAGE });
+      return;
+    }
+
+    setState({ status: "loading" });
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/v1/analysis`, {
@@ -55,170 +41,147 @@ export function App() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(buildRequestBody(content, url))
       });
 
-      const responseBody = (await response.json()) as AnalysisResult | { error?: { message?: string } };
-
-      setHttpStatus(response.status);
-
       if (!response.ok) {
-        setResult(null);
-        setErrorMessage("error" in responseBody && responseBody.error?.message ? responseBody.error.message : "An unexpected error occurred.");
+        setState({ status: "error", message: API_ERROR_MESSAGE });
         return;
       }
 
-      setResult(responseBody as AnalysisResult);
-    } catch (error) {
-      setHttpStatus(null);
-      setResult(null);
-      setErrorMessage(error instanceof Error ? error.message : "Failed to reach the analysis API.");
-    } finally {
-      setIsLoading(false);
+      setState({ status: "success", result: (await response.json()) as AnalysisResult });
+    } catch {
+      setState({ status: "error", message: API_ERROR_MESSAGE });
     }
   }
 
-  function loadSample(sample: keyof typeof sampleCases) {
-    const selected = sampleCases[sample];
-
-    setInputType(selected.input_type);
-    setContent(selected.content);
-    setUrl("https://example.com");
-    setResult(null);
-    setHttpStatus(null);
-    setErrorMessage(null);
-  }
+  const result = state.status === "success" ? state.result : null;
 
   return (
-    <main className="shell">
-      <section className="hero">
-        <p className="eyebrow">MirrorAI MVP v0.1</p>
-        <h1>بنية أساسية عربية أولاً لتحليل المخاطر الرقمية</h1>
-        <p className="lede">
-          هذه الواجهة تستدعي الـ API المحلي مباشرة وتعرض نتيجة التحليل الفعلية من
-          Route → AnalysisService → Risk Engine → Response.
-        </p>
-        <div className="sample-buttons" aria-label="عينات الإدخال">
-          <button type="button" className="secondary-button" onClick={() => loadSample("awareness")}>
-            عيّنة توعوية
-          </button>
-          <button type="button" className="secondary-button" onClick={() => loadSample("phishing")}>
-            عيّنة تصيّد
-          </button>
-          <button type="button" className="secondary-button" onClick={() => loadSample("verification")}>
-            عيّنة تحقق
-          </button>
+    <main className="app-shell">
+      <header className="brand-header centered">
+        <div className="brand-logo-slot">
+          <img src="/brand/mirrorai-logo.png" alt="MirrorAI" />
         </div>
+        <div className="brand-title-wrap">
+          <h1>MirrorAI</h1>
+          <p className="brand-tagline">رفيقك الرقمي</p>
+        </div>
+        <p className="brand-attribution">منتج من NestHive</p>
+      </header>
+
+      <section className="intro-card">
+        <p>الصق رسالة أو منشوراً وصلك، وسنريك الإشارات التي تستحق الانتباه قبل أن تقرر. لا نحفظ ما تكتبه.</p>
       </section>
 
-      <section className="panel">
-        <h2>تشغيل التحليل</h2>
-        <div className="form-grid">
-          <label>
-            نوع الإدخال
-            <select value={inputType} onChange={(event) => setInputType(event.target.value as AnalysisInputType)}>
-              {supportedInputs.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {(inputType === "INPUT-TEXT" || inputType === "INPUT-MIXED") && (
-            <label>
-              المحتوى
-              <textarea
-                rows={6}
-                value={content}
-                onChange={(event) => setContent(event.target.value)}
-                placeholder="اكتب أو الصق الرسالة هنا"
-              />
-            </label>
-          )}
-
-          {(inputType === "INPUT-URL" || inputType === "INPUT-MIXED") && (
-            <label>
-              الرابط
-              <input
-                type="url"
-                value={url}
-                onChange={(event) => setUrl(event.target.value)}
-                placeholder="https://example.com"
-              />
-            </label>
-          )}
+      <section className="input-card">
+        <div className="section-title">
+          <h2>توقّف، فكّر، تحقّق</h2>
         </div>
 
-        <div className="action-row">
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() => {
-              void runAnalysis(formatRequestBody(inputType, content, url));
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? "جاري التحليل..." : "تحليل الآن"}
-          </button>
-          <span className="request-preview-label">معاينة الطلب</span>
-        </div>
+        <form
+          className="analysis-form"
+          onSubmit={(event) => {
+            void handleSubmit(event);
+          }}
+        >
+          <label htmlFor="content-input">ما الرسالة التي تريد فحصها؟</label>
+          <textarea
+            id="content-input"
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            placeholder="الصق هنا رسالة SMS أو واتساب أو منشوراً... بالعربية أو الدارجة أو الفرنسية"
+            rows={7}
+          />
 
-        <pre className="request-preview">{requestPreview}</pre>
-      </section>
-
-      <section className="panel">
-        <h2>نتيجة التحليل</h2>
-        <div className="result-meta">
-          <span>HTTP status: {httpStatus ?? "-"}</span>
-          <span>risk_score: {result?.risk_score ?? "-"}</span>
-          <span>risk_level: {result?.risk_level ?? "-"}</span>
-          <span>confidence: {result?.confidence ?? "-"}</span>
-        </div>
-
-        {errorMessage ? <p className="error-box">{errorMessage}</p> : null}
-
-        {result ? (
-          <div className="result-stack">
-            <section>
-              <h3>Summary</h3>
-              <p>{result.summary}</p>
-            </section>
-
-            <section>
-              <h3>Explanation</h3>
-              <p>{result.explanation}</p>
-            </section>
-
-            <section>
-              <h3>Evidence</h3>
-              <ul>
-                {result.evidence.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
-
-            <section>
-              <h3>Recommended actions</h3>
-              <ul>
-                {result.recommended_actions.map((action) => (
-                  <li key={`${action.level}-${action.title}`}>
-                    <strong>{action.level}</strong> {action.title}: {action.description}
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section>
-              <h3>Raw JSON</h3>
-              <pre className="json-block">{JSON.stringify(result, null, 2)}</pre>
-            </section>
+          <div className="secondary-input">
+            <label htmlFor="url-input">رابط مرتبط بالرسالة (اختياري)</label>
+            <input
+              id="url-input"
+              type="url"
+              dir="ltr"
+              value={url}
+              onChange={(event) => setUrl(event.target.value)}
+              placeholder="https://"
+            />
+            <p className="field-note">لا تفتح الرابط. يكفي أن تلصقه هنا.</p>
           </div>
+
+          <button type="submit" disabled={state.status === "loading"}>
+            {state.status === "loading" ? "جارٍ الفحص..." : "افحص الرسالة"}
+          </button>
+
+          {state.status === "error" ? <p className="error-banner">{state.message}</p> : null}
+        </form>
+      </section>
+
+      <section className="results-grid" aria-live="polite">
+        {result ? (
+          <>
+            <article className={`result-card score-card full-width ${levelClassName(result.risk_level)}`}>
+              <span className="card-label">مستوى الخطر</span>
+              <strong>{levelLabel(result.risk_level)}</strong>
+              {result.risk_score !== null ? (
+                <>
+                  <progress
+                    className="score-progress"
+                    max={100}
+                    value={result.risk_score}
+                    aria-label="مؤشر المخاطر"
+                    aria-valuetext={`${result.risk_score} من 100`}
+                  />
+                  <p className="score-band-label">{result.risk_score} / 100</p>
+                  <p>{SCORE_MEANING_TEXT}</p>
+                </>
+              ) : null}
+              <p>{summaryFor(result)}</p>
+            </article>
+
+            {result.signals.length > 0 ? (
+              <article className="result-card full-width">
+                <span className="card-label">ما الذي لاحظناه؟</span>
+                <ul className="signal-list">
+                  {result.signals.map((signal) => {
+                    const copy = copyForSignal(signal.signal_id);
+
+                    return (
+                      <li key={signal.signal_id}>
+                        <strong>{copy.title}</strong>
+                        <span>{copy.description}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </article>
+            ) : null}
+
+            <article className="result-card full-width">
+              <span className="card-label">ماذا تفعل الآن؟</span>
+              <ul className="action-list">
+                {actionsFor(result).map((action) => (
+                  <li key={action}>{action}</li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="result-card full-width">
+              <span className="card-label">حدود التحليل</span>
+              <ul className="action-list subtle">
+                {LIMITATIONS.map((limitation) => (
+                  <li key={limitation}>{limitation}</li>
+                ))}
+              </ul>
+            </article>
+          </>
         ) : (
-          <p className="empty-state">اختر عيّنة أو اكتب إدخالًا ثم اضغط على تحليل الآن.</p>
+          <article className="result-card empty-state full-width">
+            <span className="card-label">النتيجة</span>
+            <p>بعد الفحص ستظهر هنا الإشارات التي رصدناها، وسبب أهميتها، وما يُنصح أن تفعله.</p>
+          </article>
         )}
       </section>
+
+      {state.status === "loading" ? <div className="loading-bar" aria-hidden="true" /> : null}
     </main>
   );
 }
