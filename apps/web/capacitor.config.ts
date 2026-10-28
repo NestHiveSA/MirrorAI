@@ -6,7 +6,9 @@ const config: CapacitorConfig = {
   webDir: "dist",
   android: {
     // The app runs the risk engine on-device and never needs cleartext traffic.
-    allowMixedContent: false
+    allowMixedContent: false,
+    // Android 16 forces edge-to-edge; keep the web view clear of the system bars.
+    adjustMarginsForEdgeToEdge: "auto"
   }
 };
 

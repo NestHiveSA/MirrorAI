@@ -7,8 +7,9 @@ android {
         applicationId "ma.nesthive.mirrorai"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Play needs a higher code on every upload; CI supplies its run number.
+        versionCode((System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger())
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +17,23 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        // Play upload key, provided by CI from repository secrets. Without it the
+        // release build stays unsigned and only debug builds are installable.
+        if (System.getenv("MIRRORAI_KEYSTORE_PATH")) {
+            release {
+                storeFile file(System.getenv("MIRRORAI_KEYSTORE_PATH"))
+                storePassword System.getenv("MIRRORAI_KEYSTORE_PASSWORD")
+                keyAlias "upload"
+                keyPassword System.getenv("MIRRORAI_KEYSTORE_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            if (System.getenv("MIRRORAI_KEYSTORE_PATH")) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
