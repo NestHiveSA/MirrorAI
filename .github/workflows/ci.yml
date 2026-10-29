@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build shared packages
+        run: |
+          npm run build -w @mirrorai/shared
+          npm run build -w @mirrorai/knowledge
+          npm run build -w @mirrorai/risk-engine
+
+      - name: Typecheck web app
+        run: npm run typecheck -w @mirrorai/web
+
+      - name: Lint web app
+        run: npm run lint -w @mirrorai/web
+
+      - name: Test web app
+        run: npm run test -w @mirrorai/web
